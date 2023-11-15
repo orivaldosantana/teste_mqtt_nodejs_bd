@@ -19,5 +19,8 @@
   "homepage": "https://github.com/orivaldosantana/teste_mqtt_nodejs_bd#readme",
   "devDependencies": {
     "prisma": "^5.6.0"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.6.0"
   }
 }

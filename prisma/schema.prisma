@@ -9,3 +9,20 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+
+model Reading {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  value     Float
+  sensor    Sensor    @relation(fields: [sensorId], references: [id])
+  sensorId  Int
+}
+
+model Sensor {
+  id        Int     @id @default(autoincrement())
+  location  String  
+  code      String  @unique
+  name      String?
+  readings  Reading[]
+}
