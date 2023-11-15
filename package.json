@@ -1,0 +1,23 @@
+{
+  "name": "teste_mqtt_nodejs_bd",
+  "version": "1.0.0",
+  "description": "Estudo de como integrar leitura de um sensor via MQTT com um banco de dados dentro de uma aplicação NodeJS.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/orivaldosantana/teste_mqtt_nodejs_bd.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/orivaldosantana/teste_mqtt_nodejs_bd/issues"
+  },
+  "homepage": "https://github.com/orivaldosantana/teste_mqtt_nodejs_bd#readme",
+  "devDependencies": {
+    "prisma": "^5.6.0"
+  }
+}
