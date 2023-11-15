@@ -17,9 +17,30 @@ Criando um projeto Prisma
 npx prisma init
 ```
 
-Mapeando o modelo de dados da aplicação para o esquema no banco de dados: 
+Mapeando o modelo de dados da aplicação para o esquema no banco de dados:
+
 ```
 npx prisma migrate dev --name init
+```
+
+## Instalações de pacotes
+
+Cliente Prisma:
+
+```
+npm install @prisma/client
+```
+
+MQTT:
+
+```
+npm install mqtt
+```
+
+Acesso ao .env
+
+```
+npm install dotenv
 ```
 
 # Referências
