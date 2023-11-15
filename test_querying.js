@@ -3,14 +3,19 @@ const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 
 async function main() {
-  const user = await prisma.sensor.create({
+  const sensor = await prisma.sensor.create({
     data: {
       location: 'casa',
       name: 'Iluminação',
-      code: 'LDR01'
+      code: 'LDR02',
+      readings: {
+        create: {
+          value: 2000
+        }
+      }
     }
   })
-  console.log(user)
+  console.log(sensor)
 }
 
 main()
