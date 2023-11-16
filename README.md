@@ -45,4 +45,7 @@ npm install dotenv
 
 # Referências
 
-- [ Set up Prisma - Start from scratch](https://www.prisma.io/docs/getting-started/setup-prisma/start-from-scratch)
+- [Set up Prisma - Start from scratch](https://www.prisma.io/docs/getting-started/setup-prisma/start-from-scratch)
+- [Vídeo com exemplo simples sobre MQTT e NodeJS](https://youtu.be/yX6j9AmUVOA)
+- [Código com exemplo simples sobre MQTT e NodeJS](https://replit.com/@orivaldosantana/testenodejsmqtt)
+- [Vídeo sobre ferramenta para facilitar o uso de banco de dados na linguagem de programação NodeJS](https://youtu.be/bl2hDCdlhQ0)
