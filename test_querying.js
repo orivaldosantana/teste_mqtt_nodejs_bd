@@ -2,22 +2,36 @@ const { PrismaClient } = require('@prisma/client')
 
 const prisma = new PrismaClient()
 
-async function main() {
-  const reading = await prisma.reading.create({
-    data: {
-      sensorId: 3,
-      value: 2000
-    }
-  })
-  console.log(reading)
+async function createReading() {
+  try {
+    const reading = await prisma.reading.create({
+      data: {
+        sensorId: 3,
+        value: 2000
+      }
+    })
+    console.log(reading)
+  } catch (error) {
+    console.log(error)
+  }
 }
 
-main()
-  .then(async () => {
-    await prisma.$disconnect()
-  })
-  .catch(async e => {
-    console.error(e)
-    await prisma.$disconnect()
-    process.exit(1)
-  })
+async function createSensor() {
+  try {
+    const sensor = await prisma.sensor.create({
+      data: {
+        location: 'casa',
+        name: 'Umidade do ar',
+        code: 'UMI01'
+      }
+    })
+    console.log(sensor)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+//createReading()
+createSensor()
+
+prisma.$disconnect()

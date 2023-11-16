@@ -2,7 +2,7 @@
 
 Estudo de como realizar leituras de sensores via MQTT e gravar em banco de dados numa aplicação NodeJS.
 
-## Criando o banco de dados
+## Organização inicial
 
 Criando um projeto NodeJS
 
@@ -22,6 +22,10 @@ Mapeando o modelo de dados da aplicação para o esquema no banco de dados:
 ```
 npx prisma migrate dev --name init
 ```
+
+## Criando o banco de dados
+
+
 
 ## Instalações de pacotes
 

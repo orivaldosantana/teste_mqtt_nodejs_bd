@@ -27,10 +27,13 @@ const client = mqtt.connect(connectUrl, {
 const pubTopic = 'ORIVA/casa/log'
 const subTopicTemp = 'ORIVA/casa/temperatura'
 const subTopicLDR = 'ORIVA/casa/luminosidade'
+const subTopicHumi = 'ORIVA/casa/umidade'
 client.on('connect', () => {
   console.log('Connected')
-  client.subscribe([subTopicTemp, subTopicLDR], () => {
-    console.log(`Subscribe to topics '${subTopicTemp}' and '${subTopicLDR}'`)
+  client.subscribe([subTopicTemp, subTopicLDR, subTopicHumi], () => {
+    console.log(
+      `Subscribe to topics '${subTopicTemp}', '${subTopicHumi}', and '${subTopicLDR}'`
+    )
   })
   client.publish(
     pubTopic,
@@ -46,26 +49,20 @@ client.on('connect', () => {
 
 async function recordDataIntoBD(subTopic, data) {
   console.log(subTopic)
+  let sId = 0
   if (subTopic == subTopicTemp) {
-    try {
-      const reading = await prisma.reading.create({
-        data: {
-          sensorId: 1,
-          value: parseFloat(data)
-        }
-      })
-
-      console.log(reading)
-    } catch (error) {
-      console.error(
-        `Erro de escrita no banco de dados:\n Para o tópico: ${subTopic}\n${error}`
-      )
-    }
+    sId = 1
   } else if (subTopic == subTopicLDR) {
+    sId = 2
+  } else if (subTopic == subTopicHumi) {
+    sId = 5
+  }
+  
+  if (sId == 5 || sId == 2 || sId == 1) {
     try {
       const reading = await prisma.reading.create({
         data: {
-          sensorId: 2,
+          sensorId: parseInt(sId),
           value: parseFloat(data)
         }
       })
@@ -81,12 +78,10 @@ async function recordDataIntoBD(subTopic, data) {
 client.on('message', async (subTopic, payload) => {
   console.log('Received Message:', subTopic, payload.toString())
   recordDataIntoBD(subTopic, payload.toString())
-    .then(async () => {
-      await prisma.$disconnect()
-    })
-    .catch(async e => {
-      console.error(e)
-      await prisma.$disconnect()
-      process.exit(1)
-    })
+})
+
+// Adicionando o manipulador de eventos 'beforeExit' para desconectar o Prisma antes de sair
+process.on('beforeExit', async () => {
+  console.log('Disconnecting Prisma before exit.')
+  await prisma.$disconnect()
 })
