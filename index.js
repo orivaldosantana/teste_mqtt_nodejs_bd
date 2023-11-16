@@ -47,21 +47,34 @@ client.on('connect', () => {
 async function recordDataIntoBD(subTopic, data) {
   console.log(subTopic)
   if (subTopic == subTopicTemp) {
-    const reading = await prisma.reading.create({
-      data: {
-        sensorId: 1,
-        value: parseFloat(data)
-      }
-    })
-    console.log(reading)
+    try {
+      const reading = await prisma.reading.create({
+        data: {
+          sensorId: 1,
+          value: parseFloat(data)
+        }
+      })
+
+      console.log(reading)
+    } catch (error) {
+      console.error(
+        `Erro de escrita no banco de dados:\n Para o tópico: ${subTopic}\n${error}`
+      )
+    }
   } else if (subTopic == subTopicLDR) {
-    const reading = await prisma.reading.create({
-      data: {
-        sensorId: 2,
-        value: parseFloat(data)
-      }
-    })
-    console.log(reading)
+    try {
+      const reading = await prisma.reading.create({
+        data: {
+          sensorId: 2,
+          value: parseFloat(data)
+        }
+      })
+      console.log(reading)
+    } catch (error) {
+      console.error(
+        `Erro de escrita no banco de dados:\n Para o tópico: ${subTopic}\n${error}`
+      )
+    }
   }
 }
 
