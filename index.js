@@ -3,6 +3,9 @@ const dotenv = require('dotenv')
 dotenv.config()
 console.log(`MQTT Server: ${process.env.MQTT_SERVER}`)
 
+const { PrismaClient } = require('@prisma/client')
+const prisma = new PrismaClient()
+
 console.log('Testing MQTT and Prisma!')
 
 const mqtt = require('mqtt')
@@ -22,11 +25,12 @@ const client = mqtt.connect(connectUrl, {
 })
 
 const pubTopic = 'ORIVA/casa/log'
-const subTopic = 'ORIVA/casa/temperatura'
+const subTopicTemp = 'ORIVA/casa/temperatura'
+const subTopicLDR = 'ORIVA/casa/luminosidade'
 client.on('connect', () => {
   console.log('Connected')
-  client.subscribe([subTopic], () => {
-    console.log(`Subscribe to topic '${subTopic}'`)
+  client.subscribe([subTopicTemp, subTopicLDR], () => {
+    console.log(`Subscribe to topics '${subTopicTemp}' and '${subTopicLDR}'`)
   })
   client.publish(
     pubTopic,
@@ -40,6 +44,36 @@ client.on('connect', () => {
   )
 })
 
-client.on('message', (subTopic, payload) => {
+async function recordDataIntoBD(subTopic, data) {
+  console.log(subTopic)
+  if (subTopic == subTopicTemp) {
+    const reading = await prisma.reading.create({
+      data: {
+        sensorId: 1,
+        value: parseFloat(data)
+      }
+    })
+    console.log(reading)
+  } else if (subTopic == subTopicLDR) {
+    const reading = await prisma.reading.create({
+      data: {
+        sensorId: 2,
+        value: parseFloat(data)
+      }
+    })
+    console.log(reading)
+  }
+}
+
+client.on('message', async (subTopic, payload) => {
   console.log('Received Message:', subTopic, payload.toString())
+  recordDataIntoBD(subTopic, payload.toString())
+    .then(async () => {
+      await prisma.$disconnect()
+    })
+    .catch(async e => {
+      console.error(e)
+      await prisma.$disconnect()
+      process.exit(1)
+    })
 })
