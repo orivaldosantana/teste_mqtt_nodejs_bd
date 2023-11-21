@@ -1,7 +1,17 @@
+const ss = require('simple-statistics')
 //fonte https://www.emqx.com/en/blog/how-to-use-mqtt-in-nodejs
 const dotenv = require('dotenv')
 dotenv.config()
 console.log(`MQTT Server: ${process.env.MQTT_SERVER}`)
+
+// Arquivo temporário para guardar as leituras intermediárias dos sensores
+const tempReadings = []
+const ldrReadings = []
+const humiReadings = []
+var readingsCounter = 0
+var initialTimer = Date.now()
+var finalTimer = Date.now()
+const maxTimeReadings = 11 * 60 * 1000 // 11 minutos
 
 const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
@@ -47,37 +57,61 @@ client.on('connect', () => {
   )
 })
 
-async function recordDataIntoBD(subTopic, data) {
+async function sensorReadings(subTopic, data) {
   console.log(subTopic)
-  let sId = 0
+  finalTimer = Date.now()
+  //let sId = 0
   if (subTopic == subTopicTemp) {
-    sId = 1
+    readingsCounter++
+    tempReadings.push(parseFloat(data))
+    //sId = 1
   } else if (subTopic == subTopicLDR) {
-    sId = 2
+    //sId = 2
+    ldrReadings.push(parseFloat(data))
   } else if (subTopic == subTopicHumi) {
-    sId = 5
+    //sId = 5
+    humiReadings.push(parseFloat(data))
   }
-  
-  if (sId == 5 || sId == 2 || sId == 1) {
-    try {
-      const reading = await prisma.reading.create({
-        data: {
-          sensorId: parseInt(sId),
-          value: parseFloat(data)
-        }
-      })
-      console.log(reading)
-    } catch (error) {
-      console.error(
-        `Erro de escrita no banco de dados:\n Para o tópico: ${subTopic}\n${error}`
-      )
-    }
+  if (
+    readingsCounter >= 10 ||
+    (finalTimer - initialTimer > maxTimeReadings && readingsCounter > 1)
+  ) {
+    readingsCounter = 0
+    console.log(finalTimer - initialTimer)
+    initialTimer = Date.now()
+
+    recordDataIntoBD(1, ss.median(tempReadings))
+    recordDataIntoBD(2, ss.median(ldrReadings))
+    recordDataIntoBD(5, ss.median(humiReadings))
+
+    console.log('Median: ' + ss.median(ldrReadings))
+    tempReadings.length = 0
+    ldrReadings.length = 0
+    humiReadings.length = 0
+  }
+  console.log('LDR Readings: ' + ldrReadings)
+}
+
+async function recordDataIntoBD(id, value) {
+  try {
+    const reading = await prisma.reading.create({
+      data: {
+        sensorId: parseInt(id),
+        value: parseFloat(value)
+      }
+    })
+    console.log(reading)
+  } catch (error) {
+    console.error(
+      `Erro de escrita no banco de dados:\n Para o sensor: ${id}\n${error}`
+    )
   }
 }
 
 client.on('message', async (subTopic, payload) => {
   console.log('Received Message:', subTopic, payload.toString())
-  recordDataIntoBD(subTopic, payload.toString())
+  //recordDataIntoBD(subTopic, payload.toString())
+  sensorReadings(subTopic, payload.toString())
 })
 
 // Adicionando o manipulador de eventos 'beforeExit' para desconectar o Prisma antes de sair

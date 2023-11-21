@@ -43,6 +43,12 @@ Acesso ao .env
 npm install dotenv
 ```
 
+Para funções de estatística
+
+```
+npm install simple-statistics
+```
+
 # Referências
 
 - [Set up Prisma - Start from scratch](https://www.prisma.io/docs/getting-started/setup-prisma/start-from-scratch)
