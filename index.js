@@ -68,6 +68,7 @@ async function sensorReadings(subTopic, data) {
   } else if (subTopic == subTopicLDR) {
     //sId = 2
     ldrReadings.push(parseFloat(data))
+    console.log('LDR Readings: ' + ldrReadings)
   } else if (subTopic == subTopicHumi) {
     //sId = 5
     humiReadings.push(parseFloat(data))
@@ -89,7 +90,6 @@ async function sensorReadings(subTopic, data) {
     ldrReadings.length = 0
     humiReadings.length = 0
   }
-  console.log('LDR Readings: ' + ldrReadings)
 }
 
 async function recordDataIntoBD(id, value) {
