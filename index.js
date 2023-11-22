@@ -68,17 +68,14 @@ async function sensorReadings(subTopic, data) {
   } else if (subTopic == subTopicLDR) {
     //sId = 2
     ldrReadings.push(parseFloat(data))
-    console.log('LDR Readings: ' + ldrReadings)
   } else if (subTopic == subTopicHumi) {
     //sId = 5
     humiReadings.push(parseFloat(data))
   }
-  if (
-    readingsCounter >= 10 ||
-    (finalTimer - initialTimer > maxTimeReadings && readingsCounter > 1)
-  ) {
+  if (readingsCounter > 9) {
+    console.log('LDR Readings: ' + ldrReadings)
     readingsCounter = 0
-    console.log(finalTimer - initialTimer)
+    console.log((finalTimer - initialTimer) / 1000)
     initialTimer = Date.now()
 
     recordDataIntoBD(1, ss.median(tempReadings))
